@@ -47,7 +47,7 @@ const CreatePoint = () => {
         whatsapp: ''
     });
 
-    const [selecteFile, setSelecteFile] = useState<File>();
+    const [selectedFile, setSelectedFile] = useState<File>();
 
     const history = useHistory();
 
@@ -141,23 +141,26 @@ const CreatePoint = () => {
             data.append('name', name);
             data.append('email', email);
             data.append('whatsapp', whatsapp);
-            data.append('uf', uf);
-            data.append('city', city);
             data.append('latitude', String(latitude));
             data.append('longitude', String(longitude));
+            data.append('uf', uf);
+            data.append('city', city);
             data.append('items', items.join(','));
 
-            if (selecteFile) {
-                data.append('image', selecteFile);
+            if (selectedFile) {
+                data.append('image', selectedFile);
             }
 
-            await api.post('points', data);
+            console.log(data);
+
+            await api.post('/points', data);
 
             alert('Ponto de Coleta Criado!');
 
             history.push('/');
+
         } catch (Exception) {
-            alert(Exception);
+            console.log(Exception);
         }
     }
 
@@ -175,7 +178,7 @@ const CreatePoint = () => {
             <form onSubmit={handleSubmit}>
                 <h1>Cadastro do <br /> ponto de coleta</h1>
 
-                <Dropzone onFileUploaded={setSelecteFile} />
+                <Dropzone onFileUploaded={setSelectedFile} />
 
                 <fieldset>
                     <legend><h2>Dados</h2></legend>

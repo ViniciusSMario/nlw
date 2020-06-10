@@ -1,4 +1,5 @@
 import express from 'express';
+
 import multer from 'multer';
 import multerConfig from './config/multer';
 import { celebrate, Joi } from 'celebrate';
@@ -18,7 +19,7 @@ routes.get('/items', itemsController.index);
 
 
 routes.get('/points/:id', pointsController.show);
-routes.post('/points', pointsController.index);
+routes.get('/points', pointsController.index);
 
 routes
     .post('/points',

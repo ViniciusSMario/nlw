@@ -10,22 +10,18 @@ class PointsController {
         const point = await knex('points').where('id', id).first();
 
         if (!point) {
-            return response.status(400).json({ message: "Point not found" });
+            return response.status(400).json({ message: 'Point not found.' });
         }
-
-        const serializedPointsItem = {
+        const serializedPoint = {
             ...point,
-            image_url: `http://192.168.10.10:3030/uploads/${point.image}`,
-        }
-
-
+            image_url: `http://192.168.10.10:3333/uploads/${point.image}`,
+        };
         const items = await knex('items')
             .join('point_items', 'items.id', '=', 'point_items.item_id')
             .where('point_items.point_id', id)
             .select('items.name');
 
-
-        return response.json({ point: serializedPointsItem, items });
+        return response.json({ point: serializedPoint, items });
     }
 
     async create(request: Request, response: Response) {
@@ -52,23 +48,23 @@ class PointsController {
             longitude,
             city,
             uf
-        }
+        };
 
-        const inserted_ids = await trx('points').insert(point);
+        const insertedIds = await trx('points').insert(point);
 
-        const point_id = inserted_ids[0];
+        const point_id = insertedIds[0];
 
         const pointItems =
             items
                 .split(',')
-                .map((item: String) => Number(item.trim()))
+                .map((item: string) => Number(item.trim()))
                 .map(
                     (item_id: number) => {
                         return {
                             item_id,
                             point_id,
-                        }
-                    })
+                        };
+                    });
 
         await trx('point_items').insert(pointItems);
 
@@ -77,8 +73,7 @@ class PointsController {
         return response.json({
             id: point_id,
             ...point,
-        })
-
+        });
     }
 
     async index(request: Request, response: Response) {
@@ -96,14 +91,13 @@ class PointsController {
             .distinct()
             .select('points.*');
 
-
         const serializedPoints = points.map(point => {
             return {
                 ...point,
-                image_url: `http://192.168.10.10:3030/uploads/${point.image}`,
+                image_url: `http://192.168.10.10:3333/uploads/${point.image}`,
             };
-
         });
+
         return response.json(serializedPoints);
     }
 }

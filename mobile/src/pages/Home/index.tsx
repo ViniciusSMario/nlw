@@ -3,8 +3,7 @@ import { View, Image, ImageBackground, StyleSheet, Text, TextInput, KeyboardAvoi
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import { Feather as Icon } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import RNPickerSelect from 'react-native-picker-select';
-import axios from 'axios';
+
 
 
 interface IbgeUfResponse {
@@ -42,6 +41,9 @@ const Home = () => {
                         <Image source={require('../../assets/logo.png')} />
                         <Text style={styles.title}>Seu MarketPlace de coleta de resíduos</Text>
                         <Text style={styles.description}>Ajudamos pessoas a encontrarem pontos de coleta de forma eficiente</Text>
+                    </View>
+                    <View>
+                        <Text style={styles.viewText}>Preencha os campos corretamente para obter os pontos de coleta!</Text>
                     </View>
 
                     <View>
@@ -117,6 +119,15 @@ const styles = StyleSheet.create({
     footer: {},
 
     select: {},
+
+    viewText: {
+        marginTop: 20,
+        marginBottom: 10,
+        fontSize: 16,
+        textAlign: "center",
+        color: "#34CB79",
+        fontWeight: "bold"
+    },
 
     input: {
         height: 60,

@@ -28,10 +28,10 @@ interface Params {
     city: string
 }
 
-const Points = (() => {
+const Points: React.FC = (() => {
     const [items, setItems] = useState<Item[]>([])
     const [selectedItem, setSelectedItem] = useState<number[]>([])
-    const [points, setPoints] = useState<Point[]>([])
+    const [points, setPoints] = useState<Point[]>([]);
     const [initialPosition, setInitialPosition] = useState<[number, number]>([0, 0])
     const navigation = useNavigation();
 
@@ -39,12 +39,18 @@ const Points = (() => {
 
     const routeParams = route.params as Params;
 
+    //carregar items da api
     useEffect(() => {
-        api.get('items').then(response => {
+        async function loadPoints() {
+            const response = await api.get("/items");
+
             setItems(response.data);
-        })
+        }
+
+        loadPoints();
     }, []);
 
+    //carregar posição
     useEffect(() => {
         async function loadPosition() {
             const { status } = await Location.requestPermissionsAsync();
@@ -65,23 +71,29 @@ const Points = (() => {
         loadPosition();
     }, []);
 
+    //carregar pontos direto da api
     useEffect(() => {
-        api.get('points', {
-            params: {
-                city: routeParams.city,
-                uf: routeParams.uf,
-                items: selectedItem
-            }
-        }).then(response => {
+        async function loadPoints() {
+            const response = await api.get("/points", {
+                params: {
+                    city: routeParams.city,
+                    uf: routeParams.uf,
+                    items: selectedItem,
+                },
+            });
+            console.log(response.data);
             setPoints(response.data);
-        })
+        }
+
+        loadPoints();
     }, [selectedItem]);
 
     function handleNavigateBack() {
         navigation.goBack();
     }
+
     function handleNavigateToDetail(id: number) {
-        navigation.navigate('Detail', { point_id: id })
+        navigation.navigate("Detail", { point_id: id });
     }
 
     function handleSelectItem(id: number) {
@@ -109,25 +121,30 @@ const Points = (() => {
 
                 <View style={styles.mapContainer}>
                     {initialPosition[0] !== 0 && (
-                        <MapView style={styles.map}
-
+                        <MapView
+                            style={styles.map}
                             initialRegion={{
                                 latitude: initialPosition[0],
                                 longitude: initialPosition[1],
                                 latitudeDelta: 0.014,
-                                longitudeDelta: 0.014
-                            }} >
-                            {points.map(point => (
+                                longitudeDelta: 0.014,
+                            }}
+                        >
+                            {points.map((point) => (
                                 <Marker
-                                    key={String(point.id)}
-                                    onPress={() => handleNavigateToDetail(point.id)}
-                                    style={styles.mapMarker}
-                                    coordinate={{
+                                    key={String(point.id)} style={styles.mapMarker}
+                                    onPress={() => handleNavigateToDetail(point.id)} coordinate={{
                                         latitude: point.latitude,
                                         longitude: point.longitude,
-                                    }}>
+                                    }}
+                                >
                                     <View style={styles.mapMarkerContainer}>
-                                        <Image style={styles.mapMarkerContainer} source={{ uri: point.image_url }} />
+                                        <Image
+                                            style={styles.mapMarkerImage}
+                                            source={{
+                                                uri: point.image_url,
+                                            }}
+                                        />
                                         <Text style={styles.mapMarkerTitle}>{point.name}</Text>
                                     </View>
                                 </Marker>
@@ -136,6 +153,7 @@ const Points = (() => {
                     )}
                 </View>
             </View>
+            <View><Text style={styles.viewText}>Filtre pelos itens abaixo</Text></View>
 
             <View style={styles.itemsContainer}>
                 <ScrollView horizontal
@@ -166,6 +184,14 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 32,
         paddingTop: 20 + Constants.statusBarHeight,
+    },
+
+    viewText: {
+        marginTop: 10,
+        fontSize: 16,
+        textAlign: "center",
+        color: "#34CB79",
+        fontWeight: "bold"
     },
 
     title: {
